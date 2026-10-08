@@ -1,0 +1,17 @@
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# Backend build output
+backend/target/
+
+# IDEs and OS files
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local tooling
+.claude/

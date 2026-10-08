@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+/*
+ * Dispatch design tokens. The console is dark-first: an operations surface that is
+ * looked at for hours, where colour is reserved for severity and state.
+ */
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  /* Surfaces */
+  --color-canvas: #0b0c0e;
+  --color-surface: #121417;
+  --color-surface-2: #171a1e;
+  --color-surface-3: #1e2227;
+  --color-line: #23272d;
+  --color-line-strong: #30353c;
+
+  /* Ink */
+  --color-fg: #e8eaed;
+  --color-fg-muted: #a3a8b0;
+  --color-fg-subtle: #6f757e;
+
+  /* Brand accent (interactive) */
+  --color-accent: #8b96ff;
+  --color-accent-strong: #a5aeff;
+  --color-accent-ink: #0d0f2a;
+
+  /* Severity (always paired with a text label) */
+  --color-sev-critical: #f05252;
+  --color-sev-high: #f0894b;
+  --color-sev-medium: #e3b23c;
+  --color-sev-low: #8e9bb0;
+
+  /* Incident status */
+  --color-st-open: #b49cfb;
+  --color-st-investigating: #45b5f0;
+  --color-st-resolved: #3ecf8e;
+
+  /* Health / state */
+  --color-ok: #3ecf8e;
+  --color-warn: #e3b23c;
+  --color-bad: #f05252;
+
+  /* Chart series (validated for CVD separation on the surface) */
+  --color-series-severe: #d03b3b;
+  --color-series-routine: #3987e5;
+  --color-series-resolved: #199e70;
+
+  --animate-flash: flash 2.4s ease-out;
+  --animate-slide-in: slide-in 0.35s ease-out;
+  --animate-pulse-ring: pulse-ring 2s ease-out infinite;
+
+  @keyframes flash {
+    0% {
+      background-color: color-mix(in oklab, var(--color-accent) 22%, transparent);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
+  @keyframes slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes pulse-ring {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in oklab, currentColor 55%, transparent);
+    }
+    70% {
+      box-shadow: 0 0 0 6px transparent;
+    }
+    100% {
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--color-canvas);
+  color: var(--color-fg);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-accent) 35%, transparent);
+}
+
+/* Thin, quiet scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+dialog::backdrop {
+  background: rgb(0 0 0 / 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
