@@ -17,12 +17,12 @@ final class SeedCatalog {
     }
 
     static final List<SeedUser> USERS = List.of(
-            new SeedUser("Morgan Hale", "admin@dispatch.local", "admin123", Role.ADMIN, true),
-            new SeedUser("Aravind B", "operator@dispatch.local", "operator123", Role.OPERATOR, true),
-            new SeedUser("Priya Raman", "priya@dispatch.local", "operator123", Role.OPERATOR, true),
-            new SeedUser("Marcus Chen", "marcus@dispatch.local", "operator123", Role.OPERATOR, true),
-            new SeedUser("Sofia Alvarez", "sofia@dispatch.local", "operator123", Role.OPERATOR, true),
-            new SeedUser("Daniel Okafor", "daniel@dispatch.local", "operator123", Role.OPERATOR, false));
+            new SeedUser("Aravind Bharathi", "admin@dispatch.local", "admin123", Role.ADMIN, true),
+            new SeedUser("John Doe", "john@dispatch.local", "operator123", Role.OPERATOR, true),
+            new SeedUser("Elon Musk", "elon@dispatch.local", "operator123", Role.OPERATOR, true),
+            new SeedUser("Jackie Chan", "jackie@dispatch.local", "operator123", Role.OPERATOR, true),
+            new SeedUser("John Cena", "Johncena@dispatch.local", "operator123", Role.OPERATOR, true),
+            new SeedUser("Chris Evans", "chris@dispatch.local", "operator123", Role.OPERATOR, false));
 
     record SeedService(String name, String description, Environment environment, String team, String deviceType,
             List<Integer> deviceNumbers, List<String> locations) {
