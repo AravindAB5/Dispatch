@@ -303,7 +303,7 @@ public class DevDataSeeder implements ApplicationRunner {
                             recovery.getSourceId()));
         } else {
             User responder = responder();
-            User admin = users.get("admin@dispatch.local");
+            User admin = admin();
             Instant assignedAt = start.plusSeconds(60 + random.nextInt(300));
             Instant ackAt = assignedAt.plusSeconds(random.nextInt(180));
             boolean selfAssigned = random.nextBoolean();
@@ -369,10 +369,11 @@ public class DevDataSeeder implements ApplicationRunner {
     // ---- active incidents ------------------------------------------------------------------
 
     private void seedActiveIncidents() {
-        User aravind = users.get("operator@dispatch.local");
-        User priya = users.get("priya@dispatch.local");
-        User marcus = users.get("marcus@dispatch.local");
-        User sofia = users.get("sofia@dispatch.local");
+        // Responders are taken by position from SeedCatalog.USERS, so the user list can be edited freely.
+        User first = operator(0);
+        User second = operator(1);
+        User third = operator(2);
+        User fourth = operator(3);
 
         // CRITICAL
         Incident gatewayOffline = activeEpisode(EventTypes.DEVICE_OFFLINE, Target.of(devices.get("DEVICE-108")),
@@ -380,11 +381,11 @@ public class DevDataSeeder implements ApplicationRunner {
         markOffline(devices.get("DEVICE-108"), gatewayOffline.getCreatedAt());
 
         Incident encoderOffline = activeEpisode(EventTypes.DEVICE_OFFLINE, Target.of(devices.get("DEVICE-127")),
-                minutesAgo(38), 7, 120, priya, 4, SeedCatalog.COMMENTS.get(EventTypes.DEVICE_OFFLINE).subList(0, 2));
+                minutesAgo(38), 7, 120, second, 4, SeedCatalog.COMMENTS.get(EventTypes.DEVICE_OFFLINE).subList(0, 2));
         markOffline(devices.get("DEVICE-127"), encoderOffline.getCreatedAt());
 
         Incident notificationOutage = activeEpisode(EventTypes.SERVICE_DOWN,
-                Target.of(services.get("Notification Service")), minutesAgo(22), 2, 90, marcus, 2,
+                Target.of(services.get("Notification Service")), minutesAgo(22), 2, 90, third, 2,
                 List.of("Push delivery stalled in every region. Failing over to the secondary queue cluster.",
                         "Failover to the secondary region completed. Verifying delivery before closing."));
         recoverWhileInvestigating(notificationOutage, Target.of(services.get("Notification Service")),
@@ -392,18 +393,18 @@ public class DevDataSeeder implements ApplicationRunner {
 
         // HIGH
         activeEpisode(EventTypes.CPU_USAGE_HIGH, Target.of(devices.get("DEVICE-042")), minutesAgo(17), 8, 75,
-                aravind, 3, SeedCatalog.COMMENTS.get(EventTypes.CPU_USAGE_HIGH).subList(0, 1));
+                first, 3, SeedCatalog.COMMENTS.get(EventTypes.CPU_USAGE_HIGH).subList(0, 1));
         activeEpisode(EventTypes.ERROR_RATE_HIGH, Target.of(services.get("Content Delivery API")), minutesAgo(9), 2,
                 120, null, 0, List.of());
         activeEpisode(EventTypes.SERVICE_DEGRADED, Target.of(services.get("Playback Service")), minutesAgo(52), 3,
-                300, sofia, 6, SeedCatalog.COMMENTS.get(EventTypes.SERVICE_DEGRADED));
-        declaredIncident(marcus, priya);
+                300, fourth, 6, SeedCatalog.COMMENTS.get(EventTypes.SERVICE_DEGRADED));
+        declaredIncident(third, second);
 
         // MEDIUM
         activeEpisode(EventTypes.MEMORY_USAGE_HIGH, Target.of(devices.get("DEVICE-076")), minutesAgo(26), 1, 240,
                 null, 0, List.of());
         activeEpisode(EventTypes.LATENCY_HIGH, Target.of(services.get("Authentication Service")), minutesAgo(65), 3,
-                420, priya, 7, SeedCatalog.COMMENTS.get(EventTypes.LATENCY_HIGH).subList(0, 1));
+                420, second, 7, SeedCatalog.COMMENTS.get(EventTypes.LATENCY_HIGH).subList(0, 1));
         activeEpisode(EventTypes.LATENCY_HIGH, Target.of(services.get("Content Delivery API")), minutesAgo(14), 1,
                 180, null, 0, List.of());
 
@@ -413,10 +414,10 @@ public class DevDataSeeder implements ApplicationRunner {
         Incident disk = activeEpisode(EventTypes.DISK_USAGE_HIGH, Target.of(devices.get("DEVICE-017")),
                 minutesAgo(360), 4, 2400, null, 0, List.of());
         // Assigned but not yet acknowledged.
-        disk.restoreLifecycle(IncidentStatus.OPEN, marcus, disk.getEventCount(), disk.getLastEventAt(), null, null,
+        disk.restoreLifecycle(IncidentStatus.OPEN, third, disk.getEventCount(), disk.getLastEventAt(), null, null,
                 null, null);
-        history(disk, users.get("admin@dispatch.local"), HistoryAction.ASSIGNED, null, marcus.getName(),
-                "Assigned to " + marcus.getName(), disk.getCreatedAt().plusSeconds(900));
+        history(disk, admin(), HistoryAction.ASSIGNED, null, third.getName(),
+                "Assigned to " + third.getName(), disk.getCreatedAt().plusSeconds(900));
     }
 
     /**
@@ -481,29 +482,29 @@ public class DevDataSeeder implements ApplicationRunner {
     }
 
     /** A customer-reported problem that no rule detected, declared by hand. */
-    private void declaredIncident(User marcus, User priya) {
+    private void declaredIncident(User lead, User helper) {
         MonitoredService playback = services.get("Playback Service");
         Instant created = minutesAgo(100);
         Incident incident = Incident.declare("Rebuffering reports from APAC subscribers",
                 "Support has received 40+ reports of rebuffering on Android TV in India and Singapore since this "
                         + "morning. No alert has fired; investigating CDN edge performance in ap-south-1.",
-                IncidentSeverity.HIGH, playback, null, marcus);
-        incident.restoreLifecycle(IncidentStatus.INVESTIGATING, marcus, 0, null, created.plusSeconds(120), null,
+                IncidentSeverity.HIGH, playback, null, lead);
+        incident.restoreLifecycle(IncidentStatus.INVESTIGATING, lead, 0, null, created.plusSeconds(120), null,
                 null, null);
         incident.setTimestamps(created, minutesAgo(31));
         incidentRepository.save(incident);
         incidents++;
-        history(incident, marcus, HistoryAction.CREATED, null, "HIGH", "Incident declared manually by Marcus Chen",
+        history(incident, lead, HistoryAction.CREATED, null, "HIGH", "Incident declared manually by " + lead.getName(),
                 created);
-        history(incident, marcus, HistoryAction.ASSIGNED, null, marcus.getName(), "Assigned to Marcus Chen",
+        history(incident, lead, HistoryAction.ASSIGNED, null, lead.getName(), "Assigned to " + lead.getName(),
                 created.plusSeconds(60));
-        history(incident, marcus, HistoryAction.STATUS_CHANGED, "OPEN", "INVESTIGATING",
+        history(incident, lead, HistoryAction.STATUS_CHANGED, "OPEN", "INVESTIGATING",
                 "Status changed from OPEN to INVESTIGATING", created.plusSeconds(120));
-        comment(incident, marcus, "Ticket volume is still climbing. Pulling QoE data for ap-south-1.",
+        comment(incident, lead, "Ticket volume is still climbing. Pulling QoE data for ap-south-1.",
                 created.plusSeconds(600));
-        comment(incident, priya, "CDN logs show elevated origin fetch times from the Mumbai edge since 07:50.",
+        comment(incident, helper, "CDN logs show elevated origin fetch times from the Mumbai edge since 07:50.",
                 created.plusSeconds(1900));
-        comment(incident, marcus, "Opened a case with the CDN provider (#88231). Shifting 30% of APAC traffic to the "
+        comment(incident, lead, "Opened a case with the CDN provider (#88231). Shifting 30% of APAC traffic to the "
                 + "Singapore edge as a mitigation.", minutesAgo(31));
         trackImpact(Target.of(playback), created);
     }
@@ -618,10 +619,32 @@ public class DevDataSeeder implements ApplicationRunner {
     }
 
     private User responder() {
-        List<User> responders = users.values().stream()
+        List<User> responders = activeOperators();
+        return responders.get(random.nextInt(responders.size()));
+    }
+
+    /** First active administrator in {@link SeedCatalog#USERS}. */
+    private User admin() {
+        return users.values().stream()
+                .filter(u -> u.isActive() && u.getRole() == Role.ADMIN)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("SeedCatalog.USERS needs at least one active ADMIN"));
+    }
+
+    /** The n-th active operator in {@link SeedCatalog#USERS} order (wraps around if there are fewer). */
+    private User operator(int index) {
+        List<User> operators = activeOperators();
+        return operators.get(index % operators.size());
+    }
+
+    private List<User> activeOperators() {
+        List<User> operators = users.values().stream()
                 .filter(u -> u.isActive() && u.getRole() == Role.OPERATOR)
                 .toList();
-        return responders.get(random.nextInt(responders.size()));
+        if (operators.isEmpty()) {
+            throw new IllegalStateException("SeedCatalog.USERS needs at least one active OPERATOR");
+        }
+        return operators;
     }
 
     private Instant minutesAgo(long minutes) {

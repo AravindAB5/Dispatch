@@ -26,9 +26,9 @@ echo "Dispatch smoke test → $API"
 
 # --- authentication ---------------------------------------------------------------------
 [ "$(status_of "$API/incidents")" = 401 ] && ok "anonymous requests are rejected (401)" || fail "anonymous access not rejected"
-BAD=$(curl -s -X POST "$API/auth/login" -H "$JSON" -d '{"email":"operator@dispatch.local","password":"wrong"}')
+BAD=$(curl -s -X POST "$API/auth/login" -H "$JSON" -d '{"email":"john@dispatch.local","password":"wrong"}')
 expect "wrong password gives a generic error" "$BAD" '"code":"INVALID_CREDENTIALS"'
-LOGIN=$(curl -s -X POST "$API/auth/login" -H "$JSON" -d '{"email":"operator@dispatch.local","password":"operator123"}')
+LOGIN=$(curl -s -X POST "$API/auth/login" -H "$JSON" -d '{"email":"john@dispatch.local","password":"operator123"}')
 TOKEN=$(echo "$LOGIN" | field accessToken)
 [ -n "$TOKEN" ] && ok "operator signs in and receives a JWT" || fail "login failed" "$LOGIN"
 AUTH="Authorization: Bearer $TOKEN"

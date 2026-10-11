@@ -16,7 +16,7 @@ import { qk } from "@/lib/query-keys";
 
 const DEMO_ACCOUNTS = [
   { label: "Admin", email: "admin@dispatch.local", password: "admin123", hint: "Manage rules, services, users, simulator" },
-  { label: "Operator", email: "operator@dispatch.local", password: "operator123", hint: "Work incidents" },
+  { label: "Operator", email: "john@dispatch.local", password: "operator123", hint: "Work incidents" },
 ];
 
 /**

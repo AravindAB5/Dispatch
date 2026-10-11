@@ -194,10 +194,13 @@ Development data only. Seeded when `DISPATCH_SEED_ENABLED=true` and the database
 
 | Account | Password | Role | Notes |
 |---|---|---|---|
-| `admin@dispatch.local` | `admin123` | Administrator | Manages rules, services, devices, team, simulator |
-| `operator@dispatch.local` | `operator123` | Operator | Works incidents (Aravind B) |
-| `priya@dispatch.local`, `marcus@dispatch.local`, `sofia@dispatch.local` | `operator123` | Operator | Other team members |
-| `daniel@dispatch.local` | `operator123` | Operator | Deactivated; sign-in is refused |
+| `admin@dispatch.local` | `admin123` | Administrator | Aravind Bharathi. Manages rules, services, devices, team, simulator |
+| `john@dispatch.local` | `operator123` | Operator | John Doe. Works incidents |
+| `elon@dispatch.local`, `jackie@dispatch.local`, `johncena@dispatch.local` | `operator123` | Operator | Other team members |
+| `chris@dispatch.local` | `operator123` | Operator | Deactivated; sign-in is refused |
+
+The accounts come from `SeedCatalog.USERS` in the backend. The seeder only runs against an empty database,
+so after editing that list, reset the volume with `docker compose down -v` before starting again.
 
 Event producers authenticate with the ingestion key `dispatch-dev-ingest-key` (header `X-API-Key`).
 

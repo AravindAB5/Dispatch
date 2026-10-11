@@ -25,7 +25,7 @@ Base URL: `http://localhost:8080/api/v1`. JSON in and out. Timestamps are ISO-86
 ### `POST /auth/login`
 
 ```json
-{ "email": "operator@dispatch.local", "password": "operator123" }
+{ "email": "john@dispatch.local", "password": "operator123" }
 ```
 
 `200`:
@@ -35,7 +35,7 @@ Base URL: `http://localhost:8080/api/v1`. JSON in and out. Timestamps are ISO-86
   "accessToken": "eyJhbGciOiJIUzI1NiJ9…",
   "tokenType": "Bearer",
   "expiresAt": "2026-10-09T06:00:00Z",
-  "user": { "id": 2, "name": "Aravind B", "email": "operator@dispatch.local", "role": "OPERATOR" }
+  "user": { "id": 2, "name": "John Doe", "email": "john@dispatch.local", "role": "OPERATOR" }
 }
 ```
 
@@ -152,7 +152,7 @@ A single event with its linked incidents; the distinct event types seen so far.
       "severity": "CRITICAL", "status": "INVESTIGATING",
       "service": { "id": 3, "name": "Device Gateway", "status": "DEGRADED" },
       "device": { "id": 14, "identifier": "DEVICE-108", "name": "Gateway node 03", "status": "OFFLINE" },
-      "assignee": { "id": 2, "name": "Aravind B", "email": "operator@dispatch.local" },
+      "assignee": { "id": 2, "name": "John Doe", "email": "john@dispatch.local" },
       "automated": true, "eventCount": 6,
       "lastEventAt": "…", "acknowledgedAt": "…", "recoveredAt": null, "resolvedAt": null,
       "createdAt": "…", "updatedAt": "…"
@@ -175,8 +175,8 @@ Chronological audit entries:
 [
   { "id": 1, "action": "CREATED", "fromValue": null, "toValue": "CRITICAL",
     "message": "Incident created by rule \"Device offline\" from a DEVICE_OFFLINE event", "actor": null, "createdAt": "…" },
-  { "id": 2, "action": "ASSIGNED", "fromValue": null, "toValue": "Aravind B",
-    "message": "Assigned to Aravind B", "actor": { "id": 2, "name": "Aravind B", "email": "…" }, "createdAt": "…" }
+  { "id": 2, "action": "ASSIGNED", "fromValue": null, "toValue": "John Doe",
+    "message": "Assigned to John Doe", "actor": { "id": 2, "name": "John Doe", "email": "…" }, "createdAt": "…" }
 ]
 ```
 
